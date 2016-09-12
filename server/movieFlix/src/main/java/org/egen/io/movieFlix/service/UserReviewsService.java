@@ -11,6 +11,6 @@ public interface UserReviewsService {
 	public UserReviews findOne(UserReviewsPK urwPK);
 	public List<UserReviews> findMovieReviews(String imdbID);
 	public UserReviews create(UserReviews urw);
-	public UserReviews update(String id,UserReviews urw);
+	public UserReviews update(UserReviewsPK urw_pk,UserReviews urw);
 	public void delete(UserReviewsPK urw_pk);
 }

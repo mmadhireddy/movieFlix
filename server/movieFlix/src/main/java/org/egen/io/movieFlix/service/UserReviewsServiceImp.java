@@ -45,17 +45,24 @@ public class UserReviewsServiceImp implements UserReviewsService{
 
 	@Override
 	@Transactional
-	public UserReviews update(String id,UserReviews urw) {
-//		UserReviews urwExist = repository.findOne(id);
-//		if(urwExist == null){
-//			throw new EntityNotFoundException("Review is  Not Found");
-//		}
+	public UserReviews update(UserReviewsPK urw_pk,UserReviews urw) {
+		UserReviews urwExist = repository.findOne(urw_pk);
+		if(urwExist == null){
+			throw new EntityNotFoundException("Review is  Not Found");
+		}
 		return repository.update(urw);
 	}
 
 	@Override
 	@Transactional
 	public UserReviews create(UserReviews urw) {
+		UserReviewsPK urw_pk= new UserReviewsPK();
+		urw_pk.setImdbid(urw.getImdbid());
+		urw_pk.setUserid(urw.getUserid());
+		UserReviews urwExist = repository.findOne(urw_pk);
+		if(urwExist == null){
+			throw new EntityNotFoundException("Review is  Already Exist");
+		}
 		return repository.create(urw);
 	}
 
