@@ -2,11 +2,15 @@ package org.egen.io.movieFlix.service;
 
 import java.util.List;
 
+import org.egen.io.movieFlix.UserReviewsPK;
 import org.egen.io.movieFlix.entity.MediaList;
+import org.egen.io.movieFlix.entity.User;
 import org.egen.io.movieFlix.entity.UserReviews;
 import org.egen.io.movieFlix.exception.EntityAlreadyExistException;
 import org.egen.io.movieFlix.exception.EntityNotFoundException;
+import org.egen.io.movieFlix.exception.UnauthorisedUserException;
 import org.egen.io.movieFlix.repository.MediaListRepository;
+import org.egen.io.movieFlix.repository.UserRepository;
 import org.egen.io.movieFlix.repository.UserReviewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,8 @@ public class MediaListServiceImp implements MediaListService{
 	
 	@Autowired
 	private MediaListRepository repository;
+	@Autowired
+	private UserRepository usrRepo;
 	@Autowired
 	private UserReviewsRepository  reviewRepo;
 	
@@ -51,7 +57,11 @@ public class MediaListServiceImp implements MediaListService{
 
 	@Override
 	@Transactional
-	public MediaList create(MediaList mdl) {
+	public MediaList create(String userid,MediaList mdl) {
+		User usr = usrRepo.findOne(userid);
+		if (!usr.getAdmin()) {
+			throw new UnauthorisedUserException("User Not allowed to do this actions");
+		}
 		MediaList mdlExist = repository.findOne(mdl.getImdbid());
 		if (mdlExist != null) {
 			throw new EntityAlreadyExistException("Video already exists with this email");
@@ -61,8 +71,12 @@ public class MediaListServiceImp implements MediaListService{
 
 	@Override
 	@Transactional
-	public MediaList update(String id, MediaList mdl) {
-		MediaList mdlExist = repository.findOne(id);
+	public MediaList update(UserReviewsPK urw_pk, MediaList mdl) {
+		User usr = usrRepo.findOne(urw_pk.getUserid());
+		if (!usr.getAdmin()) {
+			throw new UnauthorisedUserException("User Not allowed to do this actions");
+		}
+		MediaList mdlExist = repository.findOne(urw_pk.getImdbid());
 		if(mdlExist == null  ){
 			throw new EntityNotFoundException("Video Not Found");
 		}
@@ -71,12 +85,16 @@ public class MediaListServiceImp implements MediaListService{
 
 	@Override
 	@Transactional
-	public void delete(String imdbid) {
-		MediaList mdlExist = repository.findOne(imdbid);
+	public void delete(UserReviewsPK urw_pk) {
+		User usr = usrRepo.findOne(urw_pk.getUserid());
+		if (!usr.getAdmin()) {
+			throw new UnauthorisedUserException("User Not allowed to do this actions");
+		}
+		MediaList mdlExist = repository.findOne(urw_pk.getImdbid());
 		if (mdlExist == null) {
 			throw new EntityNotFoundException("Video not found");
 		}
-		List<UserReviews> urw = reviewRepo.findMovieReviews(imdbid);
+		List<UserReviews> urw = reviewRepo.findMovieReviews(mdlExist.getImdbid());
 		for(UserReviews ur : urw){
 			reviewRepo.delete(ur);
 		}

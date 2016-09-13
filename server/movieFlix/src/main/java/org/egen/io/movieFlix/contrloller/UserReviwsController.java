@@ -7,6 +7,7 @@ import org.egen.io.movieFlix.entity.UserReviews;
 import org.egen.io.movieFlix.service.UserReviewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value="userreviews",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value="{userid}/userreviews",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class UserReviwsController {
 	@Autowired
 	private UserReviewsService service;
@@ -41,17 +42,19 @@ public class UserReviwsController {
 		return service.create(urw);
 	}
 	 
-	@RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public UserReviews update(@RequestParam(value="userid", required=true)String userid, 
-			@RequestParam(value="imdbid", required=true)String imdbid,@RequestBody UserReviews urw) {
+	@RequestMapping(method = RequestMethod.PUT,value="{imdbid}" ,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public UserReviews update(@PathVariable("userid")  String userid,@PathVariable("imdbid") String imdbid,@RequestBody UserReviews urw) {
 		UserReviewsPK urw_pk= new UserReviewsPK();
 		urw_pk.setImdbid(imdbid);
 		urw_pk.setUserid(userid);
 		return service.update(urw_pk, urw);
 	}
 	
-	@RequestMapping(method = RequestMethod.DELETE,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public void delete(@RequestBody UserReviewsPK urw_pk) {
+	@RequestMapping(method = RequestMethod.DELETE,value="{imdbid}")
+	public void delete(@PathVariable("userid")  String userid,@PathVariable("imdbid") String imdbid) {
+		UserReviewsPK urw_pk= new UserReviewsPK();
+		urw_pk.setImdbid(imdbid);
+		urw_pk.setUserid(userid);
 		 service.delete(urw_pk);
 	}
 }

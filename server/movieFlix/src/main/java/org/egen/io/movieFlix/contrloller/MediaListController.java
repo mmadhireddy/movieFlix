@@ -2,6 +2,7 @@ package org.egen.io.movieFlix.contrloller;
 
 import java.util.List;
 
+import org.egen.io.movieFlix.UserReviewsPK;
 import org.egen.io.movieFlix.entity.MediaList;
 import org.egen.io.movieFlix.service.MediaListService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value="medialist",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value="{userid}/medialist",produces=MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class MediaListController {
 	
 	@Autowired
@@ -24,24 +25,30 @@ public class MediaListController {
 		return service.findAll();
 	}
 	
-	@RequestMapping(method = RequestMethod.GET,value="{id}")
-	public MediaList findOne(String id){
-		return service.findOne(id);
+	@RequestMapping(method = RequestMethod.GET,value="{imdbid}")
+	public MediaList findOne(@PathVariable("imdbid")  String imdbid){
+		return service.findOne(imdbid);
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public MediaList create(@RequestBody MediaList mdl) {
-		return service.create(mdl);
+	public MediaList create(@PathVariable("userid")  String userid,@RequestBody MediaList mdl) {
+		return service.create(userid,mdl);
 	}
 	
-	@RequestMapping(method = RequestMethod.PUT,value="{id}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public MediaList update(@PathVariable("id") String imdbID,@RequestBody MediaList mdl) {
-		return service.update(imdbID, mdl);
+	@RequestMapping(method = RequestMethod.PUT,value="{imdbid}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public MediaList update(@PathVariable("userid")  String userid,@PathVariable("imdbid") String imdbid,@RequestBody MediaList mdl) {
+		UserReviewsPK urw_pk=new UserReviewsPK();
+		urw_pk.setUserid(userid);
+		urw_pk.setImdbid(imdbid);
+		return service.update(urw_pk, mdl);
 	}
 	
-	@RequestMapping(method = RequestMethod.DELETE,value="{id}")
-	public void delete(@PathVariable("id") String imdbID) {
-		 service.delete(imdbID);
+	@RequestMapping(method = RequestMethod.DELETE,value="{imdbid}")
+	public void delete(@PathVariable("userid")  String userid,@PathVariable("imdbid") String imdbid) {
+		UserReviewsPK urw_pk=new UserReviewsPK();
+		urw_pk.setUserid(userid);
+		urw_pk.setImdbid(imdbid);
+		 service.delete(urw_pk);
 	}
 
 }

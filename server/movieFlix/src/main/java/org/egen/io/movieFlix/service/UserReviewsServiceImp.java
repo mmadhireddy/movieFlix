@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.egen.io.movieFlix.UserReviewsPK;
 import org.egen.io.movieFlix.entity.UserReviews;
+import org.egen.io.movieFlix.exception.EntityAlreadyExistException;
 import org.egen.io.movieFlix.exception.EntityNotFoundException;
 import org.egen.io.movieFlix.repository.UserReviewsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,7 @@ public class UserReviewsServiceImp implements UserReviewsService{
 		urw_pk.setUserid(urw.getUserid());
 		UserReviews urwExist = repository.findOne(urw_pk);
 		if(urwExist == null){
-			throw new EntityNotFoundException("Review is  Already Exist");
+			throw new EntityAlreadyExistException("Review is  Already Exist");
 		}
 		return repository.create(urw);
 	}
