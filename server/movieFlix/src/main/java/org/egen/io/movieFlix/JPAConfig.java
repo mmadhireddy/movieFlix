@@ -36,7 +36,7 @@ public class JPAConfig {
 		ds.setDriverClassName("com.mysql.jdbc.Driver");
 		ds.setUrl("jdbc:mysql://localhost:3306/movieFlix-db?useSSL=false");
 		ds.setUsername("root");
-		ds.setPassword("kittu5348");
+		ds.setPassword("12345");
 		return ds;
 	}
 
